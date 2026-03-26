@@ -8,7 +8,9 @@ Dataset: ChatDoctor-7k
 Technique: QLoRA (efficient fine-tuning on limited GPU memory)
 Framework: Unsloth (optimized for fast LLM training)
 Evaluation Metrics: BLEU, ROUGE
+
 ## 📂 Project Structure
+
 ├── data/
 │   └── chatdoctor_7k.json
 ├── notebooks/
@@ -25,18 +27,13 @@ Evaluation Metrics: BLEU, ROUGE
 │   └── rouge_scores.json
 ├── requirements.txt
 └── README.md
-🧾 Dataset
+
+## 🧾 Dataset
 Name: ChatDoctor-7k
 Domain: Medical Q&A
 Format: Instruction-following conversational data
 
-Each sample typically contains:
 
-{
-  "instruction": "...",
-  "input": "...",
-  "output": "..."
-}
 ## ⚙️ Methodology
 🔹 Model
 Base Model: Qwen 3.5
@@ -50,11 +47,12 @@ Unsloth
 Faster training
 Memory-efficient
 Optimized for LLM fine-tuning
-🛠️ Installation
-git clone https://github.com/your-username/qwen-qlora-chatdoctor.git
-cd qwen-qlora-chatdoctor
 
+## 🛠️ Installation
+git clone https://github.com/lalit1054/qwen-qlora-chatdoctor.git
+cd qwen-qlora-chatdoctor
 pip install -r requirements.txt
+
 ## ▶️ Training
 python src/train.py \
   --model_name qwen-3.5 \
@@ -62,7 +60,8 @@ python src/train.py \
   --output_dir models/finetuned_qwen \
   --batch_size 4 \
   --epochs 3
-📊 Evaluation
+  
+## 📊 Evaluation
 
 Evaluation is done using:
 
@@ -82,10 +81,12 @@ Efficient fine-tuning of large models using QLoRA
 Memory optimization using Unsloth
 Handling domain-specific datasets (medical QA)
 Evaluating generative models with BLEU & ROUGE
+
 ## ⚠️ Limitations
 BLEU/ROUGE may not fully capture medical correctness
 Requires domain-specific evaluation for real-world use
 Limited dataset size (~7k samples)
+
 ## 🔮 Future Work
 Use larger medical datasets
 Integrate human evaluation
