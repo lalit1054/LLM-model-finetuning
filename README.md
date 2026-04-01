@@ -1,105 +1,92 @@
-# 🧠 LLM Fine-Tuning with Qwen 3.5 using QLoRA (ChatDoctor Dataset)
+# Technical Assignment - Option 2: Medical Domain Q&A with ChatDoctor
 
-This project focuses on fine-tuning the Qwen 3.5 using the ChatDoctor-7k dataset with QLoRA (Quantized Low-Rank Adaptation) via the Unsloth framework. The model is evaluated using standard NLP metrics such as BLEU and ROUGE.
+This repository is structured as a submission-ready solution for **Challenge Option 2: Generative AI**. The selected task is **domain-specific Q&A in the medical domain** using the **ChatDoctor** dataset, with **QLoRA fine-tuning implemented using Unsloth**.
 
-## 🚀 Project Overview
-Fine-tuning a medical-domain conversational LLM
-Dataset: ChatDoctor-7k
-Technique: QLoRA (efficient fine-tuning on limited GPU memory)
-Framework: Unsloth (optimized for fast LLM training)
-Evaluation Metrics: BLEU, ROUGE
+## Objective
+Fine-tune a small language model for medical question answering so it produces more domain-adapted responses than the base model while staying within assignment constraints.
 
-## 📂 Project Structure
+## Model Separation
+The project keeps the original and fine-tuned artifacts separate:
+- Base model snapshot: `models/base/Qwen3.5-0.8B`
+- Fine-tuned model output: `models/qwen3.5-0.8b-chatdoctor-unsloth`
 
-├── data/
-│   └── chatdoctor_7k.json
-├── notebooks/
-│   └── training.ipynb
-├── src/
-│   ├── data_preprocessing.py
-│   ├── train.py
-│   ├── evaluate.py
-│   └── utils.py
-├── models/
-│   └── finetuned_qwen/
-├── results/
-│   ├── bleu_scores.json
-│   └── rouge_scores.json
+This prevents accidental overwriting of the downloaded base model and makes evaluation clearer.
+
+## Chosen Setup
+- Challenge option: `Option 2 - Generative AI`
+- Task: `Domain-specific Q&A`
+- Domain: `Medical`
+- Dataset: `ChatDoctor`
+- Local dataset file: `train-00000-of-00001-505f61796f2642f0.parquet`
+- Base model path: `models/base/Qwen3.5-0.8B`
+- Fine-tuned model path: `models/qwen3.5-0.8b-chatdoctor-unsloth`
+- Model family: `Qwen3.5`
+- Parameter count: `0.8B`
+- Fine-tuning method: `QLoRA`
+- Training framework: `Unsloth`
+
+## Repository Layout
+```text
+.
+├── README.md
 ├── requirements.txt
-└── README.md
+├── model_card.md
+├── reports/
+│   └── final_report_template.md
+├── data/
+│   ├── data_card.md
+│   └── processed/
+├── models/
+│   ├── base/
+│   │   └── Qwen3.5-0.8B/
+│   └── qwen3.5-0.8b-chatdoctor-unsloth/
+├── notebooks/
+│   ├── 01_training_pipeline.ipynb
+│   └── 02_evaluation.ipynb
+├── outputs/
+└── src/
+    ├── data_prep.py
+    ├── train.py
+    └── evaluate.py
+```
 
-## 🧾 Dataset
-Name: ChatDoctor-7k
-Domain: Medical Q&A
-Format: Instruction-following conversational data
+## 1. Prepare the ChatDoctor Dataset
+```bash
+python src/data_prep.py \
+  --input_parquet train-00000-of-00001-505f61796f2642f0.parquet \
+  --output_dir data/processed \
+  --seed 42
+```
 
-
-## ⚙️ Methodology
-🔹 Model
-Base Model: Qwen 3.5
-Type: Instruction-tuned LLM
-🔹 Fine-Tuning Technique
-QLoRA (Quantized Low-Rank Adaptation)
-Reduces GPU memory usage
-Enables training large models on limited hardware
-🔹 Framework
-Unsloth
-Faster training
-Memory-efficient
-Optimized for LLM fine-tuning
-
-## 🛠️ Installation
-git clone https://github.com/lalit1054/qwen-qlora-chatdoctor.git
-cd qwen-qlora-chatdoctor
-pip install -r requirements.txt
-
-## ▶️ Training
+## 2. Fine-Tune with Unsloth QLoRA
+```bash
 python src/train.py \
-  --model_name qwen-3.5 \
-  --dataset_path data/chatdoctor_7k.json \
-  --output_dir models/finetuned_qwen \
-  --batch_size 4 \
-  --epochs 3
-  
-## 📊 Evaluation
+  --model_name models/base/Qwen3.5-0.8B \
+  --train_file data/processed/train.jsonl \
+  --validation_file data/processed/validation.jsonl \
+  --output_dir models/qwen3.5-0.8b-chatdoctor-unsloth \
+  --save_merged
+```
 
-Evaluation is done using:
-
-BLEU Score → measures n-gram overlap
-ROUGE Score → measures recall-based similarity
+## 3. Evaluate Base vs Fine-Tuned Model
+```bash
 python src/evaluate.py \
-  --model_path models/finetuned_qwen \
-  --test_data data/test.json
-📈 Results
-Metric	Score
-BLEU	XX.XX
-ROUGE-1	XX.XX
+  --base_model models/base/Qwen3.5-0.8B \
+  --adapter_path models/qwen3.5-0.8b-chatdoctor-unsloth \
+  --test_file data/processed/test.jsonl \
+  --output_dir outputs/eval \
+  --num_samples 100
+```
 
+## Submission Template
+Use:
+- `reports/final_report_template.md`
+- `outputs/eval/metrics.json`
+- `outputs/eval/examples.jsonl`
+- `outputs/eval/evaluation_report.md`
 
-## 💡 Key Learnings
-Efficient fine-tuning of large models using QLoRA
-Memory optimization using Unsloth
-Handling domain-specific datasets (medical QA)
-Evaluating generative models with BLEU & ROUGE
-
-## ⚠️ Limitations
-BLEU/ROUGE may not fully capture medical correctness
-Requires domain-specific evaluation for real-world use
-Limited dataset size (~7k samples)
-
-## 🔮 Future Work
-Use larger medical datasets
-Integrate human evaluation
-Deploy via API (FastAPI / Flask)
-Add RAG (Retrieval-Augmented Generation)
-
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
-## 🙌 Acknowledgements
-Qwen Model Team
-ChatDoctor Dataset Contributors
-Unsloth Framework
-
+## Notes
+- Do not save fine-tuned checkpoints inside `models/base/`.
+- Keep the base model unchanged so comparisons remain reproducible.
+- Training saves the LoRA adapter in `models/qwen3.5-0.8b-chatdoctor-unsloth/adapter/`.
+- Passing `--save_merged` also writes a merged 16-bit fine-tuned model into `models/qwen3.5-0.8b-chatdoctor-unsloth/`.
