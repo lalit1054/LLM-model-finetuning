@@ -1,0 +1,109 @@
+{
+  "dataset": {
+    "test_path": "/home/lalit/Documents/Learning/LLM-model-finetuning/data/processed/test.jsonl",
+    "num_samples": 25
+  },
+  "runtime": {
+    "device": "cuda",
+    "dtype": "torch.float16",
+    "fine_tuned_loading_mode": "adapter_on_base"
+  },
+  "config": {
+    "base_model_path": "/home/lalit/Documents/Learning/LLM-model-finetuning/models/base/Qwen3.5-0.8B",
+    "finetuned_model_path": "/home/lalit/Documents/Learning/LLM-model-finetuning/models/qwen3.5-0.8b-chatdoctor-unsloth/checkpoint-700",
+    "test_data_path": "/home/lalit/Documents/Learning/LLM-model-finetuning/data/processed/test.jsonl",
+    "train_log_path": "/home/lalit/Documents/Learning/LLM-model-finetuning/models/qwen3.5-0.8b-chatdoctor-unsloth/training_log.json",
+    "run_config_path": "/home/lalit/Documents/Learning/LLM-model-finetuning/models/qwen3.5-0.8b-chatdoctor-unsloth/run_config.json",
+    "output_dir": "/home/lalit/Documents/Learning/LLM-model-finetuning/outputs/complete_evaluation",
+    "max_new_tokens": 512,
+    "max_input_length": 512,
+    "num_samples": 25,
+    "temperature": 0.0,
+    "do_sample": false,
+    "seed": 42,
+    "enable_bertscore": false,
+    "bertscore_model_type": "distilbert-base-uncased"
+  },
+  "models": {
+    "base_model": {
+      "rouge1": 0.2864405048292696,
+      "rouge2": 0.06946253974803011,
+      "rougeL": 0.15638482792497968,
+      "bleu": 0.03335590080993712,
+      "token_f1": 0.2864405048292696,
+      "avg_prediction_tokens": 71.68,
+      "avg_reference_tokens": 149.36
+    },
+    "prompt_baseline": {
+      "rouge1": 0.31835353464823885,
+      "rouge2": 0.07339015623567738,
+      "rougeL": 0.15582506002566596,
+      "bleu": 0.0428465199024737,
+      "token_f1": 0.31835353464823885,
+      "avg_prediction_tokens": 158.96,
+      "avg_reference_tokens": 149.36
+    },
+    "finetuned_model": {
+      "rouge1": 0.4379508110906697,
+      "rouge2": 0.17054968476421867,
+      "rougeL": 0.25094318391116166,
+      "bleu": 0.11303872133878169,
+      "token_f1": 0.4379508110906697,
+      "avg_prediction_tokens": 155.52,
+      "avg_reference_tokens": 149.36
+    }
+  },
+  "error_analysis": {
+    "base_model": {
+      "incomplete_answer": 28.0,
+      "no_major_error": 28.0,
+      "wrong_medical_info": 44.0,
+      "hallucination": 0.0,
+      "repetition": 0.0
+    },
+    "prompt_baseline": {
+      "incomplete_answer": 8.0,
+      "no_major_error": 16.0,
+      "wrong_medical_info": 76.0,
+      "hallucination": 0.0,
+      "repetition": 0.0
+    },
+    "finetuned_model": {
+      "no_major_error": 56.0,
+      "repetition": 24.0,
+      "wrong_medical_info": 20.0,
+      "hallucination": 0.0,
+      "incomplete_answer": 0.0
+    }
+  },
+  "overfitting_check": {
+    "status": "no_clear_overfitting",
+    "evidence": "Training loss decreased from 2.2851 to 1.4077. Validation loss also improved from 1.5644 to 1.4553, with the best validation loss 1.4485 at step 600.",
+    "train_start_loss": 2.2851,
+    "train_end_loss": 1.4077,
+    "eval_start_loss": 1.5644,
+    "eval_end_loss": 1.4553,
+    "best_eval_loss": 1.4485,
+    "best_eval_step": 600
+  },
+  "comparison_summary": {
+    "finetuned_minus_base": {
+      "rouge1": 0.1515,
+      "rouge2": 0.1011,
+      "rougeL": 0.0946,
+      "bleu": 0.0797,
+      "token_f1": 0.1515,
+      "avg_prediction_tokens": 83.84,
+      "avg_reference_tokens": 0.0
+    },
+    "finetuned_minus_prompt_baseline": {
+      "rouge1": 0.1196,
+      "rouge2": 0.0972,
+      "rougeL": 0.0951,
+      "bleu": 0.0702,
+      "token_f1": 0.1196,
+      "avg_prediction_tokens": -3.44,
+      "avg_reference_tokens": 0.0
+    }
+  }
+}

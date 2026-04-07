@@ -15,6 +15,9 @@ from trl import SFTTrainer
 
 DEFAULT_MODEL_PATH = 'models/base/Qwen3.5-0.8B'
 DEFAULT_OUTPUT_DIR = 'models/qwen3.5-0.8b-chatdoctor-unsloth'
+DEFAULT_TRAIN_PATH = 'data/processed/train.jsonl'
+DEFAULT_VALIDATION_PATH = 'data/processed/validation.jsonl'
+
 SYSTEM_PROMPT = (
     'You are a cautious medical question answering assistant. '
     'Provide general educational guidance, avoid definitive diagnosis, '
@@ -32,11 +35,23 @@ TARGET_MODULES = [
 
 
 def format_example(example, tokenizer):
-    messages = [
-        {'role': 'system', 'content': SYSTEM_PROMPT},
-        {'role': 'user', 'content': example['instruction'].strip()},
-        {'role': 'assistant', 'content': example['response'].strip()},
-    ]
+    # Case 1: If dataset is in chat format (messages)
+    if "messages" in example:
+        messages = example["messages"]
+
+        # Modify user message → add "Question:"
+        for msg in messages:
+            if msg["role"] == "user":
+                msg["content"] = f"Question: {msg['content'].strip()}"
+
+    # Case 2: If dataset is simple input/output
+    else:
+        messages = [
+            {'role': 'system', 'content': SYSTEM_PROMPT},
+            {'role': 'user', 'content': f"Question: {example['input'].strip()}"},
+            {'role': 'assistant', 'content': example['output'].strip()},
+        ]
+
     return {
         'text': tokenizer.apply_chat_template(
             messages,
@@ -96,20 +111,20 @@ def save_outputs(trainer, tokenizer, output_dir: Path, save_merged: bool) -> dic
 def main() -> None:
     parser = argparse.ArgumentParser(description='Fine-tune ChatDoctor medical QA with Unsloth QLoRA.')
     parser.add_argument('--model_name', type=str, default=DEFAULT_MODEL_PATH)
-    parser.add_argument('--train_file', type=str, required=True)
-    parser.add_argument('--validation_file', type=str, required=True)
+    parser.add_argument('--train_file', type=str, default=DEFAULT_TRAIN_PATH)
+    parser.add_argument('--validation_file', type=str, default=DEFAULT_VALIDATION_PATH)
     parser.add_argument('--output_dir', type=str, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument('--epochs', type=int, default=5)
     parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--eval_batch_size', type=int, default=1)
     parser.add_argument('--gradient_accumulation_steps', type=int, default=16)
-    parser.add_argument('--learning_rate', type=float, default=2e-4)
-    parser.add_argument('--max_seq_length', type=int, default=512)
+    parser.add_argument('--learning_rate', type=float, default=1e-4)
+    parser.add_argument('--max_seq_length', type=int, default=1024)
     parser.add_argument('--lora_rank', type=int, default=16)
     parser.add_argument('--lora_alpha', type=int, default=32)
-    parser.add_argument('--lora_dropout', type=float, default=0.0)
+    parser.add_argument('--lora_dropout', type=float, default=0.05)
     parser.add_argument('--logging_steps', type=int, default=10)
-    parser.add_argument('--eval_steps', type=int, default=100)
+    parser.add_argument('--eval_steps', type=int, default=50)
     parser.add_argument('--save_steps', type=int, default=100)
     parser.add_argument('--torch_empty_cache_steps', type=int, default=10)
     parser.add_argument(
@@ -180,6 +195,7 @@ def main() -> None:
         bf16=True,
         optim='adamw_8bit',
         torch_empty_cache_steps=args.torch_empty_cache_steps,
+        max_grad_norm = 1
     )
 
     trainer = SFTTrainer(
@@ -189,7 +205,7 @@ def main() -> None:
         eval_dataset=formatted['validation'],
         dataset_text_field='text',
         max_seq_length=args.max_seq_length,
-        packing=False,
+        packing=True,
         args=training_args,
         callbacks=[EarlyStoppingCallback(early_stopping_patience=2)],
     )
