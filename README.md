@@ -1,6 +1,6 @@
-# Technical Assignment - Option 2: Medical Domain Q&A with ChatDoctor
+# Medical Q&A model finetune
 
-This repository is structured as a submission-ready solution for **Challenge Option 2: Generative AI**. The selected task is **domain-specific Q&A in the medical domain** using the **ChatDoctor** dataset, with **QLoRA fine-tuning implemented using Unsloth**.
+This repository is for **Generative AI**. **domain-specific Q&A in the medical domain** using the **ChatDoctor** dataset, with **QLoRA fine-tuning implemented using Unsloth**.
 
 ## Objective
 Fine-tune a small language model for medical question answering so it produces more domain-adapted responses than the base model while staying within assignment constraints.
@@ -13,8 +13,6 @@ The project keeps the original and fine-tuned artifacts separate:
 This prevents accidental overwriting of the downloaded base model and makes evaluation clearer.
 
 ## Chosen Setup
-- Challenge option: `Option 2 - Generative AI`
-- Task: `Domain-specific Q&A`
 - Domain: `Medical`
 - Dataset: `ChatDoctor`
 - Local dataset file: `train-00000-of-00001-505f61796f2642f0.parquet`
@@ -40,9 +38,6 @@ This prevents accidental overwriting of the downloaded base model and makes eval
 │   ├── base/
 │   │   └── Qwen3.5-0.8B/
 │   └── qwen3.5-0.8b-chatdoctor-unsloth/
-├── notebooks/
-│   ├── 01_training_pipeline.ipynb
-│   └── 02_evaluation.ipynb
 ├── outputs/
 └── src/
     ├── data_prep.py
@@ -70,7 +65,7 @@ python src/train.py \
 
 ## 3. Evaluate Base vs Fine-Tuned Model
 ```bash
-python src/evaluate.py \
+python 03_complete_evaluation_analysis.py \
   --base_model models/base/Qwen3.5-0.8B \
   --adapter_path models/qwen3.5-0.8b-chatdoctor-unsloth \
   --test_file data/processed/test.jsonl \
@@ -78,15 +73,8 @@ python src/evaluate.py \
   --num_samples 100
 ```
 
-## Submission Template
-Use:
-- `reports/final_report_template.md`
-- `outputs/eval/metrics.json`
-- `outputs/eval/examples.jsonl`
-- `outputs/eval/evaluation_report.md`
+.
 
 ## Notes
 - Do not save fine-tuned checkpoints inside `models/base/`.
-- Keep the base model unchanged so comparisons remain reproducible.
-- Training saves the LoRA adapter in `models/qwen3.5-0.8b-chatdoctor-unsloth/adapter/`.
-- Passing `--save_merged` also writes a merged 16-bit fine-tuned model into `models/qwen3.5-0.8b-chatdoctor-unsloth/`.
+
