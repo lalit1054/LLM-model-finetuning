@@ -28,9 +28,9 @@ This prevents accidental overwriting of the downloaded base model and makes eval
 .
 ├── README.md
 ├── requirements.txt
-├── model_card.md
-├── reports/
-│   └── final_report_template.md
+├── 03_complete_evaluation_analysis.py
+├── outputs/complete_evaluation
+│   └── evaluation_report.txt
 ├── data/
 │   ├── data_card.md
 │   └── processed/
@@ -38,11 +38,10 @@ This prevents accidental overwriting of the downloaded base model and makes eval
 │   ├── base/
 │   │   └── Qwen3.5-0.8B/
 │   └── qwen3.5-0.8b-chatdoctor-unsloth/
-├── outputs/
 └── src/
     ├── data_prep.py
     ├── train.py
-    └── evaluate.py
+    
 ```
 
 ## 1. Prepare the ChatDoctor Dataset
